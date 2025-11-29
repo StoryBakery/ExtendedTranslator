@@ -13,9 +13,12 @@ build_files = [
 [indices]
 default = "https://github.com/pesde-pkg/index"
 
+[wally_indices]
+default = "https://github.com/UpliftGames/wally-index"
+
 [dependencies]
-Signal = { workspace = "story_bakery/signal", version = "^" }
-Maid = { workspace = "story_bakery/maid", version = "^" }
+Signal = { repo = "Story-Bakery/Signal", rev = "main" }
+Maid = { repo = "Story-Bakery/Maid", rev = "main" }
 
 [scripts]
 roblox_sync_config_generator = ".pesde/scripts/roblox_sync_config_generator.luau"
