@@ -8,8 +8,8 @@
 local RunService = game:GetService("RunService")
 local LocalizationService = game:GetService("LocalizationService")
 
-local Signal = require("../roblox_packages/Signal")
-local Maid = require("../roblox_packages/Maid")
+local Signal = require("./roblox_packages/Signal")
+local Maid = require("./roblox_packages/Maid")
 
 local ExtendedTranslator = {}
 ExtendedTranslator.__index = ExtendedTranslator
