@@ -16,12 +16,12 @@ ExtendedTranslator.__index = ExtendedTranslator
 ExtendedTranslator.__type = "ExtendedTranslator"
 
 local globalSettings = {
-	LocaleIdsByPriority = {["en-us"] = 0},
-	OrderedLocaleIds = {"en-us"},
-	OrderedLocaleIdsChanged = Signal.new() :: Signal.ChangedSignal<{string}>,
+	LocaleIdsByPriority = { ["en-us"] = 0 },
+	OrderedLocaleIds = { "en-us" },
+	OrderedLocaleIdsChanged = Signal.new() :: Signal.ChangedSignal<{ string }>,
 }
 
-local function sortLocaleIdList(localeIdsByPriority: {[string]: number}): {string}
+local function sortLocaleIdList(localeIdsByPriority: { [string]: number }): { string }
 	local localeIds = {}
 	for id in localeIdsByPriority do
 		table.insert(localeIds, id)
@@ -45,7 +45,6 @@ local function updateGlobalOrderedLocaleIds()
 	globalSettings.OrderedLocaleIdsChanged:Fire(globalSettings.OrderedLocaleIds) -- 정렬된 목록으로 시그널 발생
 end
 
-
 --#region Constructors
 --[=[
 	@within ExtendedTranslator
@@ -53,22 +52,25 @@ end
 	Locale 우선순위와 Translator 캐시, 상태 시그널을 관리하는 객체입니다.
 ]=]
 
+export type ExtendedTranslator = setmetatable<
+	{
+		IsDestroyed: boolean,
+		Maid: Maid.Maid,
+		LocalizationTablesByPriority: { [LocalizationTable | LocalizationService]: number },
+		OrderedLocalizationTables: { LocalizationTable | LocalizationService },
+		LocaleIdsByPriority: { [string]: number },
+		OrderedLocaleIds: { string },
+		_usesGlobalLocalePriority: boolean,
+		_translatorCachesByLocalizationTableAndLocaleId: {
+			[LocalizationTable | LocalizationService]: { [string]: Translator },
+		},
 
-export type ExtendedTranslator = setmetatable<{
-	IsDestroyed: boolean,
-	Maid: Maid.Maid,
-	LocalizationTablesByPriority: {[LocalizationTable | LocalizationService]: number},
-	OrderedLocalizationTables: {LocalizationTable | LocalizationService},
-	LocaleIdsByPriority: {[string]: number},
-	OrderedLocaleIds: {string},
-	_usesGlobalLocalePriority: boolean,
-	_translatorCachesByLocalizationTableAndLocaleId: {[LocalizationTable | LocalizationService]: {[string]: Translator}},
-	
-	LocalizationTableAdded: Signal.Signal<LocalizationTable | LocalizationService, number>,
-	LocalizationTableRemoved: Signal.RemovedSignal<LocalizationTable | LocalizationService>,
-	OrderedLocaleIdsChanged: Signal.ChangedSignal<{string}>,
-
-}, typeof(ExtendedTranslator)>
+		LocalizationTableAdded: Signal.Signal<LocalizationTable | LocalizationService, number>,
+		LocalizationTableRemoved: Signal.RemovedSignal<LocalizationTable | LocalizationService>,
+		OrderedLocaleIdsChanged: Signal.ChangedSignal<{ string }>,
+	},
+	typeof(ExtendedTranslator)
+>
 
 --[=[
 	@interface ExtendedTranslatorParams
@@ -78,8 +80,8 @@ export type ExtendedTranslator = setmetatable<{
 	.UsesGlobalLocalePriority boolean? -- true이면 글로벌 우선순위를 공유합니다.
 ]=]
 export type ExtendedTranslatorParams = {
-	LocalizationTables: {LocalizationTable|LocalizationService},
-	LocaleIdsByPriority: {[string]: number}?,
+	LocalizationTables: { LocalizationTable | LocalizationService },
+	LocaleIdsByPriority: { [string]: number }?,
 	UsesGlobalLocalePriority: boolean?,
 }
 
@@ -137,11 +139,11 @@ function ExtendedTranslator.new(params: ExtendedTranslatorParams): ExtendedTrans
 	return self
 end
 
-type FormatByKey = (key: string, args: {[string]: any}?) -> string
+type FormatByKey = (key: string, args: { [string]: any }?) -> string
 
 function ExtendedTranslator.GetFormatByKeyFunction(params: ExtendedTranslatorParams): FormatByKey
 	local translator = ExtendedTranslator.new(params)
-	return function(key: string, args: {[string]: any}?)
+	return function(key: string, args: { [string]: any }?)
 		return translator:FormatByKey(key, args)
 	end
 end
@@ -156,7 +158,7 @@ end
 	@param priority number? -- 기본값 0.
 ]=]
 function ExtendedTranslator:AddLocalizationTable(
-	localizationTable: LocalizationTable | LocalizationService, 
+	localizationTable: LocalizationTable | LocalizationService,
 	priority: number?
 )
 	local priority = priority or 0
@@ -191,9 +193,7 @@ end
 	등록된 LocalizationTable을 제거하고 연결된 Translator 캐시를 정리합니다.
 	@param localizationTable LocalizationTable | LocalizationService -- 제거할 테이블.
 ]=]
-function ExtendedTranslator:RemoveLocalizationTable(
-	localizationTable: LocalizationTable | LocalizationService
-)
+function ExtendedTranslator:RemoveLocalizationTable(localizationTable: LocalizationTable | LocalizationService)
 	local existingPriority = self.LocalizationTablesByPriority[localizationTable]
 	if not existingPriority then
 		return
@@ -205,14 +205,13 @@ function ExtendedTranslator:RemoveLocalizationTable(
 	self.LocalizationTableRemoved:Fire(localizationTable)
 end
 
-
 --[=[
 	등록된 Locale 우선순위에 따라 번역 키를 포맷팅합니다.
 	@param key string -- Localization 키.
 	@param args {[string]: any}? -- 포맷팅 매개변수.
 	@return string -- 번역된 문자열 또는 키 자체.
 ]=]
-function ExtendedTranslator:FormatByKey(key: string, args: {[string]: any}?): string
+function ExtendedTranslator:FormatByKey(key: string, args: { [string]: any }?): string
 	local orderedLocaleIds = self.OrderedLocaleIds
 
 	for _, localeId in ipairs(orderedLocaleIds) do
@@ -221,13 +220,12 @@ function ExtendedTranslator:FormatByKey(key: string, args: {[string]: any}?): st
 			return translated
 		end
 	end
-	
+
 	-- 없으면 로컬리제이션 테이블의 SourceLocaleId 로 번역 시도
 	local attemptedSourceLocaleIdSet = {}
 	for _, localizationTable in ipairs(self.OrderedLocalizationTables) do
 		local sourceLocaleId = localizationTable.SourceLocaleId
-		local shouldAttempt = 
-			not attemptedSourceLocaleIdSet[sourceLocaleId] 
+		local shouldAttempt = not attemptedSourceLocaleIdSet[sourceLocaleId]
 			and not table.find(orderedLocaleIds, sourceLocaleId)
 		if shouldAttempt then
 			attemptedSourceLocaleIdSet[sourceLocaleId] = true
@@ -242,16 +240,11 @@ function ExtendedTranslator:FormatByKey(key: string, args: {[string]: any}?): st
 	return key
 end
 
-
-function ExtendedTranslator:_tryFormatByKey(
-	key: string,
-	args: {[string]: any}?, 
-	localeId: string
-): string?
+function ExtendedTranslator:_tryFormatByKey(key: string, args: { [string]: any }?, localeId: string): string?
 	for _, localizationTable in self.OrderedLocalizationTables do
 		local translator = self:_getTranslator(localizationTable, localeId)
 		local success, result = pcall(translator.FormatByKey, translator, key, args)
-		
+
 		if success then
 			return result
 		end
@@ -276,7 +269,7 @@ function ExtendedTranslator:_getTranslator(
 		local translator = if localizationTable == LocalizationService
 			then LocalizationService:GetTranslatorForLocaleAsync(localeId)
 			else (localizationTable :: LocalizationTable):GetTranslator(localeId)
-		
+
 		if translator then
 			tableCache[localeId] = translator
 		end
@@ -284,13 +277,11 @@ function ExtendedTranslator:_getTranslator(
 	end
 end
 
-
-
 --[=[
 	인스턴스 전용 Locale 우선순위를 설정하고 변경 시그널을 발생시킵니다.
 	@param localeIdsByPriority {[string]: number} -- Locale ID와 우선순위 매핑.
 ]=]
-function ExtendedTranslator:SetLocaleIdsByPriority(localeIdsByPriority: {[string]: number})
+function ExtendedTranslator:SetLocaleIdsByPriority(localeIdsByPriority: { [string]: number })
 	self.LocaleIdsByPriority = localeIdsByPriority
 	self:_updateOrderedLocaleIds()
 	self._usesGlobalLocalePriority = false
@@ -305,7 +296,7 @@ end
 	현재 적용 중인 Locale 우선순위 사본을 반환합니다.
 	@return {[string]: number} -- Locale 우선순위 매핑.
 ]=]
-function ExtendedTranslator:GetLocaleIdsByPriority(): {[string]: number}
+function ExtendedTranslator:GetLocaleIdsByPriority(): { [string]: number }
 	if self._usesGlobalLocalePriority then
 		return table.clone(globalSettings.LocaleIdsByPriority)
 	else
@@ -317,7 +308,7 @@ end
 	정렬된 Locale ID 목록의 사본을 제공합니다.
 	@return {string} -- 우선순위 및 이름 순으로 정렬된 Locale ID 배열.
 ]=]
-function ExtendedTranslator:GetOrderedLocaleIds(): {string}
+function ExtendedTranslator:GetOrderedLocaleIds(): { string }
 	if self._usesGlobalLocalePriority then
 		return table.clone(globalSettings.OrderedLocaleIds)
 	else
@@ -348,7 +339,7 @@ end
 	글로벌 Locale 우선순위를 갱신하고 공유 시그널을 발행합니다.
 	@param localeIdsByPriority {[string]: number} -- Locale ID 우선순위 매핑.
 ]=]
-function ExtendedTranslator.SetGlobalLocaleIdsByPriority(localeIdsByPriority: {[string]: number})
+function ExtendedTranslator.SetGlobalLocaleIdsByPriority(localeIdsByPriority: { [string]: number })
 	assert(typeof(localeIdsByPriority) == "table", "localeIdsByPriority must be a table.")
 	globalSettings.LocaleIdsByPriority = localeIdsByPriority
 	updateGlobalOrderedLocaleIds()
@@ -357,7 +348,7 @@ end
 --[=[
 	@return {[string]: number} -- 글로벌 Locale 우선순위 사본.
 ]=]
-function ExtendedTranslator.GetGlobalLocaleIdsByPriority(): {[string]: number}
+function ExtendedTranslator.GetGlobalLocaleIdsByPriority(): { [string]: number }
 	return table.clone(globalSettings.LocaleIdsByPriority)
 end
 
@@ -365,7 +356,7 @@ end
 	@within ExtendedTranslator
 	@return {string} -- 글로벌 Locale ID 목록 사본.
 ]=]
-function ExtendedTranslator.GetGlobalOrderedLocaleIds(): {string}
+function ExtendedTranslator.GetGlobalOrderedLocaleIds(): { string }
 	return table.clone(globalSettings.OrderedLocaleIds)
 end
 
@@ -373,11 +364,10 @@ end
 	@within ExtendedTranslator
 	@return Signal.Signal<{string}> -- 글로벌 Locale 목록 변경 시그널.
 ]=]
-function ExtendedTranslator.GetGlobalOrderedLocaleIdsChangedSignal(): Signal.Signal<{string}>
+function ExtendedTranslator.GetGlobalOrderedLocaleIdsChangedSignal(): Signal.Signal<{ string }>
 	return globalSettings.OrderedLocaleIdsChanged
 end
 --#endregion Functions
-
 
 --[[ 모듈 반환부 ]]
 return ExtendedTranslator
