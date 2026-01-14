@@ -1,16 +1,7 @@
 name = "story_bakery/extended_translator"
 version = "0.1.0"
 license = "MIT"
-includes = [
-    "pesde.toml",
-    "LICENSE",
-    "README.md",
-    ".pesde/scripts/roblox_sync_config_generator.luau",
-    ".pesde/scripts/sourcemap_generator.luau",
-    "src/**/*.luau",
-    "src/**/*.json",
-    "tests/**/*.luau",
-]
+includes = ["pesde.toml", "README.md", "LICENSE", "src"]
 
 [target]
 environment = "roblox"
