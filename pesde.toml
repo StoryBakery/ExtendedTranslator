@@ -1,5 +1,5 @@
-name = "story_bakery/extended_translator"
-version = "0.2.0"
+name = "storybakery/extended_translator"
+version = "0.1.0"
 license = "MIT"
 includes = ["pesde.toml", "README.md", "LICENSE", "src"]
 
