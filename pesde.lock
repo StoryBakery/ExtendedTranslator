@@ -138,7 +138,7 @@ Signal = ["storybakery/signal@0.1.0 roblox", "standard"]
 [graph."storybakery/maid@0.1.0 roblox".pkg_ref]
 ref_ty = "git"
 repo = "https://github.com/StoryBakery/Maid"
-tree_id = "43386870a218764d9e9b33417201fc3c659ca142"
+tree_id = "47684052da7b92b459c4680a227b7cfdc52075f1"
 new_structure = true
 
 [graph."storybakery/maid@0.1.0 roblox".pkg_ref.dependencies]
@@ -152,7 +152,7 @@ direct = ["Signal", { repo = "https://github.com/StoryBakery/Signal", rev = "mai
 [graph."storybakery/signal@0.1.0 roblox".pkg_ref]
 ref_ty = "git"
 repo = "https://github.com/StoryBakery/Signal"
-tree_id = "656b3ed033d1d354671ad8878bcc2ea0bfe015a6"
+tree_id = "7124ded1236b42ca03ecad3727a80882a7cc62ac"
 new_structure = true
 
 [graph."storybakery/signal@0.1.0 roblox".pkg_ref.dependencies]
