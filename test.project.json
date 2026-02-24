@@ -1,0 +1,33 @@
+{
+    "name": "ExtendedTranslatorTests",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "src": {
+                "$path": "src"
+            },
+            "roblox_packages": {
+                "$path": "roblox_packages"
+            },
+            "tests": {
+                "$path": "tests"
+            },
+            "LocalizationTables": {
+                "$className": "Folder",
+                "Base": {
+                    "$path": "tests/csv/Base.csv",
+                    "$properties": {
+                        "SourceLocaleId": "ko-kr"
+                    }
+                },
+                "Override": {
+                    "$path": "tests/csv/Override.csv",
+                    "$properties": {
+                        "SourceLocaleId": "ko-kr"
+                    }
+                }
+            }
+        }
+    }
+}

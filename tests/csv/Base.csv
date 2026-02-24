@@ -1,0 +1,6 @@
+Key,Source,Context,Example,en-us,ja-jp
+GREETING,안녕하세요-기본,,,Hello from base,こんにちは（基本）
+ONLY_ENGLISH,영어 번역만 있음,,,English only value,
+SOURCE_ONLY,원문 전용,,,,
+COUNT_FORMAT,{count}개,,,{count} items,{count}個
+SHARED_KEY,기본값,,,Base value,基本値

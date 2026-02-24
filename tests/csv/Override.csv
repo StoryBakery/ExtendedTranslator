@@ -1,0 +1,4 @@
+Key,Source,Context,Example,en-us,ja-jp
+GREETING,안녕하세요-오버라이드,,,Hello from override,こんにちは（上書き）
+OVERRIDE_ONLY,오버라이드 전용,,,Override only value,
+SHARED_KEY,오버라이드값,,,Override value,上書き値
